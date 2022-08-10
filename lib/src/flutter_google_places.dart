@@ -430,24 +430,27 @@ abstract class PlacesAutocompleteState extends State<PlacesAutocompleteWidget> {
         _searching = true;
       });
 
-      final res = await _places!.autocomplete(
-        value,
-        offset: widget.offset,
-        location: widget.location,
-        radius: widget.radius,
-        language: widget.language,
-        sessionToken: widget.sessionToken,
-        types: widget.types ?? [],
-        components: widget.components ?? [],
-        strictbounds: widget.strictbounds ?? false,
-        region: widget.region,
-      );
+      try {
+        final res = await _places!.autocomplete(
+          value,
+          offset: widget.offset,
+          location: widget.location,
+          radius: widget.radius,
+          language: widget.language,
+          sessionToken: widget.sessionToken,
+          types: widget.types ?? [],
+          components: widget.components ?? [],
+          strictbounds: widget.strictbounds ?? false,
+          region: widget.region,
+        );
 
-      if (res.errorMessage?.isNotEmpty == true ||
-          res.status == "REQUEST_DENIED") {
-        onResponseError(res);
-      } else {
-        onResponse(res);
+        if (res.errorMessage?.isNotEmpty == true || res.status == "REQUEST_DENIED") {
+          onResponseError(res);
+        } else {
+          onResponse(res);
+        }
+      } on ClientException {
+        onResponse(null);
       }
     } else {
       onResponse(null);
